@@ -8,15 +8,21 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -135,18 +141,41 @@ fun Carta(index: Int, imagenVolteada: Int){
 
 @Composable
 fun MemoryTron(innerPadding: PaddingValues) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
-        modifier = Modifier.wrapContentHeight()
-            .background(Color(0xFF09810F))
-            .padding(innerPadding)
-            .padding(horizontal = 20.dp)
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .background(Color(0xFF09810F))
     ) {
-        items(cartasEscogidas.toList()) {
-            val indice = it.first
-            val imagenCarta = it.second
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            modifier = Modifier.wrapContentHeight()
 
-            Carta(indice, imagenCarta)
+                .padding(innerPadding)
+                .padding(horizontal = 20.dp)
+        ) {
+            items(cartasEscogidas.toList()) {
+                val indice = it.first
+                val imagenCarta = it.second
+
+                Carta(indice, imagenCarta)
+            }
         }
+
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.End
+        ) {
+            Button(
+                onClick = {
+                    for(i in cartasVolteadas.indices){
+                        cartasVolteadas[i] = false
+                    }
+                }
+            ) {
+                Text("Reiniciar")
+            }
+        }
+
     }
+
 }
