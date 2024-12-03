@@ -1,5 +1,6 @@
 package com.cmj.practica1_pm
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.cmj.practica1_pm.ui.theme.Practica1PMTheme
@@ -37,7 +39,10 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MenuInicio(modifier: Modifier = Modifier) {
-    Column(
+    val contexto = LocalContext.current
+
+    Column(modifier = Modifier
+        .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -45,7 +50,8 @@ fun MenuInicio(modifier: Modifier = Modifier) {
             .padding(vertical = 30.dp)
             .width(200.dp),
             onClick = {
-
+                val intent = Intent(contexto, MemoryTronActivity::class.java)
+                contexto.startActivity(intent)
             }
         ) {
             Text(text = "MemoryTron")
