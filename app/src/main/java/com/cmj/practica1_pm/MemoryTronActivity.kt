@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -24,12 +25,17 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.cmj.practica1_pm.ui.theme.Practica1PMTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -37,6 +43,7 @@ import kotlinx.coroutines.launch
 private var cartasEscogidas = mutableMapOf<Int, Int>() //Indice - Imagen
 private var elecciones = mutableListOf(-1, -1)
 private val cartasVolteadas = mutableStateListOf<Boolean>()
+private val vidas = mutableIntStateOf(5)
 
 class MemoryTronActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,6 +106,7 @@ suspend fun comprobarElecciones(cartasVolteadas: MutableList<Boolean>){
 
     if(eleccion1 != eleccion2){
         Log.d("Cartas", "No son iguales, se voltean de vuelta")
+        vidas.intValue--
         delay(1000L)
 
         cartasVolteadas[elecciones[0]] = false
@@ -123,6 +131,7 @@ fun Carta(index: Int, imagenVolteada: Int){
         painterResource(imagenActual),
         "Carta",
         modifier = Modifier
+            .size(175.dp)
             .padding(8.dp)
             .clickable {
                 cartasVolteadas[index] = true
@@ -148,37 +157,72 @@ fun MemoryTron(innerPadding: PaddingValues) {
         .fillMaxSize()
         .background(Color(0xFF09810F))
     ) {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            modifier = Modifier.wrapContentHeight()
+        when(vidas.intValue){
+            0 -> {
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(innerPadding),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painterResource(R.drawable.pantalla_lose),
+                        "Pantalla de derrota",
+                        modifier = Modifier
+                            .padding(20.dp)
+                    )
+                }
 
-                .padding(innerPadding)
-                .padding(horizontal = 20.dp)
-        ) {
-            items(cartasEscogidas.toList()) {
-                val indice = it.first
-                val imagenCarta = it.second
+                Row(modifier = Modifier
+                    .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "Has perdido",
+                        color = Color.White,
+                        fontSize = 24.sp
+                    )
+                }
 
-                Carta(indice, imagenCarta)
             }
-        }
+            else -> {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(3),
+                    modifier = Modifier.wrapContentHeight()
 
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            Button(
-                onClick = {
-                    for(i in cartasVolteadas.indices){
-                        cartasVolteadas[i] = false
+                        .padding(innerPadding)
+                        .padding(horizontal = 20.dp)
+                ) {
+                    items(cartasEscogidas.toList()) {
+                        val indice = it.first
+                        val imagenCarta = it.second
+
+                        Carta(indice, imagenCarta)
                     }
                 }
-            ) {
-                Text("Reiniciar")
+
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 30.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "Vidas: ${vidas.intValue}",
+                        color = Color.White
+                    )
+                    Button(
+                        onClick = {
+                            for(i in cartasVolteadas.indices){
+                                cartasVolteadas[i] = false
+                            }
+                        }
+                    ) {
+                        Text("Reiniciar")
+                    }
+                }
             }
         }
-
     }
-
 }
