@@ -28,7 +28,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +43,7 @@ private var cartasEscogidas = mutableMapOf<Int, Int>() //Indice - Imagen
 private var elecciones = mutableListOf(-1, -1)
 private val cartasVolteadas = mutableStateListOf<Boolean>()
 private val vidas = mutableIntStateOf(5)
+private val estadoPartida = mutableStateOf("enProgreso")
 
 class MemoryTronActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,10 +107,15 @@ suspend fun comprobarElecciones(cartasVolteadas: MutableList<Boolean>){
     if(eleccion1 != eleccion2){
         Log.d("Cartas", "No son iguales, se voltean de vuelta")
         vidas.intValue--
+
+        if(vidas.intValue == 0) estadoPartida.value = "derrota"
+
         delay(1000L)
 
         cartasVolteadas[elecciones[0]] = false
         cartasVolteadas[elecciones[1]] = false
+    }else{
+        if(!cartasVolteadas.contains(false)) estadoPartida.value = "victoria"
     }
 
     elecciones[0] = -1
@@ -157,8 +162,24 @@ fun MemoryTron(innerPadding: PaddingValues) {
         .fillMaxSize()
         .background(Color(0xFF09810F))
     ) {
-        when(vidas.intValue){
-            0 -> {
+        when(estadoPartida.value){
+            "enProgreso" -> {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(3),
+                    modifier = Modifier.wrapContentHeight()
+
+                        .padding(innerPadding)
+                        .padding(horizontal = 20.dp)
+                ) {
+                    items(cartasEscogidas.toList()) {
+                        val indice = it.first
+                        val imagenCarta = it.second
+
+                        Carta(indice, imagenCarta)
+                    }
+                }
+            }
+            "derrota" -> {
                 Row(modifier = Modifier
                     .fillMaxWidth()
                     .padding(innerPadding),
@@ -184,44 +205,56 @@ fun MemoryTron(innerPadding: PaddingValues) {
                         fontSize = 24.sp
                     )
                 }
-
             }
-            else -> {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
-                    modifier = Modifier.wrapContentHeight()
-
-                        .padding(innerPadding)
-                        .padding(horizontal = 20.dp)
+            "victoria" -> {
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(innerPadding),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    items(cartasEscogidas.toList()) {
-                        val indice = it.first
-                        val imagenCarta = it.second
-
-                        Carta(indice, imagenCarta)
-                    }
+                    Image(
+                        painterResource(R.drawable.pantalla_win),
+                        "Pantalla de victoria",
+                        modifier = Modifier
+                            .padding(20.dp)
+                    )
                 }
 
                 Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 30.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        "Vidas: ${vidas.intValue}",
-                        color = Color.White
+                        "Has ganado",
+                        color = Color.White,
+                        fontSize = 24.sp
                     )
-                    Button(
-                        onClick = {
-                            for(i in cartasVolteadas.indices){
-                                cartasVolteadas[i] = false
-                            }
-                        }
-                    ) {
-                        Text("Reiniciar")
+                }
+            }
+        }
+
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 30.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                "Vidas: ${vidas.intValue}",
+                color = Color.White
+            )
+            Button(
+                onClick = {
+                    for(i in cartasVolteadas.indices){
+                        cartasVolteadas[i] = false
+                        vidas.intValue = 5
+                        estadoPartida.value = "enProgreso"
                     }
                 }
+            ) {
+                Text("Reiniciar")
             }
         }
     }
