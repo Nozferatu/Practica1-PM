@@ -195,7 +195,8 @@ fun MemoryTron(innerPadding: PaddingValues) {
                 }
 
                 Row(modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(vertical = 20.dp),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -222,7 +223,8 @@ fun MemoryTron(innerPadding: PaddingValues) {
                 }
 
                 Row(modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(vertical = 20.dp),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -249,13 +251,15 @@ fun MemoryTron(innerPadding: PaddingValues) {
                 onClick = {
                     for(i in cartasVolteadas.indices){
                         cartasVolteadas[i] = false
-                        vidas.intValue = 5
-                        estadoPartida.value = "enProgreso"
                     }
+
+                    elecciones[0] = -1
+                    elecciones[1] = -1
+
+                    vidas.intValue = 5
+                    estadoPartida.value = "enProgreso"
                 }
-            ) {
-                Text("Reiniciar")
-            }
+            ) { Text("Reiniciar") }
         }
     }
 }
