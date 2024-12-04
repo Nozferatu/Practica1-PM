@@ -46,7 +46,10 @@ class MemoryTronActivity : ComponentActivity() {
         val listaCartas = mutableListOf(
             R.drawable.carta1,
             R.drawable.carta2,
-            R.drawable.carta3
+            R.drawable.carta3,
+            R.drawable.carta4,
+            R.drawable.carta5,
+            R.drawable.carta6
         )
 
         setContent {
@@ -55,7 +58,7 @@ class MemoryTronActivity : ComponentActivity() {
             var imagenValida: Boolean
             var ocurrenciasImagen: Int
 
-            while(cartasEscogidas.size<6){
+            while(cartasEscogidas.size<12){
                 imagenValida = false
 
                 while(!imagenValida){
@@ -120,7 +123,7 @@ fun Carta(index: Int, imagenVolteada: Int){
         painterResource(imagenActual),
         "Carta",
         modifier = Modifier
-            .padding(10.dp)
+            .padding(8.dp)
             .clickable {
                 cartasVolteadas[index] = true
 
