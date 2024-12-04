@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -39,7 +40,15 @@ import com.cmj.practica1_pm.ui.theme.Practica1PMTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-private var cartasEscogidas = mutableMapOf<Int, Int>() //Indice - Imagen
+private val listaCartas = mutableListOf(
+    R.drawable.carta1,
+    R.drawable.carta2,
+    R.drawable.carta3,
+    R.drawable.carta4,
+    R.drawable.carta5,
+    R.drawable.carta6
+)
+private var cartasEscogidas = mutableStateMapOf<Int, Int>() //Indice - Imagen
 private var elecciones = mutableListOf(-1, -1)
 private val cartasVolteadas = mutableStateListOf<Boolean>()
 private val vidas = mutableIntStateOf(5)
@@ -50,40 +59,8 @@ class MemoryTronActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val listaCartas = mutableListOf(
-            R.drawable.carta1,
-            R.drawable.carta2,
-            R.drawable.carta3,
-            R.drawable.carta4,
-            R.drawable.carta5,
-            R.drawable.carta6
-        )
-
         setContent {
-            var indice = 0
-            var imagenCarta: Int
-            var imagenValida: Boolean
-            var ocurrenciasImagen: Int
-
-            while(cartasEscogidas.size<12){
-                imagenValida = false
-
-                while(!imagenValida){
-                    imagenCarta = listaCartas[listaCartas.indices.random()]
-
-                    ocurrenciasImagen = cartasEscogidas.values.count{ it == imagenCarta  }
-
-                    if(ocurrenciasImagen < 2){
-                        cartasEscogidas[indice] = imagenCarta
-
-                        cartasVolteadas.add(false)
-
-                        indice++
-                    }
-
-                    imagenValida = true
-                }
-            }
+            barajarCartas()
 
             Practica1PMTheme {
                 Surface {
@@ -94,6 +71,33 @@ class MemoryTronActivity : ComponentActivity() {
                     }
                 }
             }
+        }
+    }
+}
+
+fun barajarCartas(primeraVez: Boolean = true) {
+    var indice = 0
+    var imagenCarta: Int
+    var imagenValida: Boolean
+    var ocurrenciasImagen: Int
+
+    while(cartasEscogidas.size<12){
+        imagenValida = false
+
+        while(!imagenValida){
+            imagenCarta = listaCartas[listaCartas.indices.random()]
+
+            ocurrenciasImagen = cartasEscogidas.values.count{ it == imagenCarta  }
+
+            if(ocurrenciasImagen < 2){
+                cartasEscogidas[indice] = imagenCarta
+
+                if(primeraVez) cartasVolteadas.add(false)
+
+                indice++
+            }
+
+            imagenValida = true
         }
     }
 }
@@ -112,8 +116,8 @@ suspend fun comprobarElecciones(cartasVolteadas: MutableList<Boolean>){
 
         delay(1000L)
 
-        cartasVolteadas[elecciones[0]] = false
-        cartasVolteadas[elecciones[1]] = false
+        if(elecciones[0] != -1) cartasVolteadas[elecciones[0]] = false
+        if(elecciones[1] != -1) cartasVolteadas[elecciones[1]] = false
     }else{
         if(!cartasVolteadas.contains(false)) estadoPartida.value = "victoria"
     }
@@ -252,6 +256,10 @@ fun MemoryTron(innerPadding: PaddingValues) {
                     for(i in cartasVolteadas.indices){
                         cartasVolteadas[i] = false
                     }
+
+                    cartasEscogidas.clear()
+
+                    barajarCartas(false)
 
                     elecciones[0] = -1
                     elecciones[1] = -1
