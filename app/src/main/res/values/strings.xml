@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Practica1-PM</string>
     <string name="title_activity_memory_tron">MemoryTronActivity</string>
+    <string name="title_activity_calcula_tron">CalculaTronActivity</string>
 </resources>

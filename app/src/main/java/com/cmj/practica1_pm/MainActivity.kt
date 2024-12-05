@@ -61,7 +61,8 @@ fun MenuInicio(modifier: Modifier = Modifier) {
             .padding(vertical = 30.dp)
             .width(200.dp),
             onClick = {
-
+                val intent = Intent(contexto, CalculaTronActivity::class.java)
+                contexto.startActivity(intent)
             }
         ) {
             Text(text = "CalculaTron")
