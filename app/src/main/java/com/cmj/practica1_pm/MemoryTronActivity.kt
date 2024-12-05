@@ -51,6 +51,7 @@ private val listaCartas = mutableListOf(
 private var cartasEscogidas = mutableStateMapOf<Int, Int>() //Indice - Imagen
 private var elecciones = mutableListOf(-1, -1)
 private val cartasVolteadas = mutableStateListOf<Boolean>()
+private val debounce = mutableStateOf(false)
 private val vidas = mutableIntStateOf(5)
 private val estadoPartida = mutableStateOf("enProgreso")
 
@@ -114,7 +115,9 @@ suspend fun comprobarElecciones(cartasVolteadas: MutableList<Boolean>){
 
         if(vidas.intValue == 0) estadoPartida.value = "derrota"
 
+        debounce.value = true
         delay(1000L)
+        debounce.value = false
 
         if(elecciones[0] != -1) cartasVolteadas[elecciones[0]] = false
         if(elecciones[1] != -1) cartasVolteadas[elecciones[1]] = false
@@ -143,17 +146,19 @@ fun Carta(index: Int, imagenVolteada: Int){
             .size(175.dp)
             .padding(8.dp)
             .clickable {
-                cartasVolteadas[index] = true
+                if(!debounce.value){
+                    cartasVolteadas[index] = true
 
-                if(elecciones[0] == -1){
-                    Log.d("Cartas", "Primera elección: $index")
-                    elecciones[0] = index
-                }else if(elecciones[0] != index && elecciones[1] == -1){
-                    Log.d("Cartas", "Segunda elección: $index")
-                    elecciones[1] = index
+                    if(elecciones[0] == -1){
+                        Log.d("Cartas", "Primera elección: $index")
+                        elecciones[0] = index
+                    }else if(elecciones[0] != index && elecciones[1] == -1){
+                        Log.d("Cartas", "Segunda elección: $index")
+                        elecciones[1] = index
 
-                    coroutineScope.launch {
-                        comprobarElecciones(cartasVolteadas)
+                        coroutineScope.launch {
+                            comprobarElecciones(cartasVolteadas)
+                        }
                     }
                 }
             }
@@ -265,6 +270,7 @@ fun MemoryTron(innerPadding: PaddingValues) {
                     elecciones[1] = -1
 
                     vidas.intValue = 5
+                    debounce.value = false
                     estadoPartida.value = "enProgreso"
                 }
             ) { Text("Reiniciar") }
