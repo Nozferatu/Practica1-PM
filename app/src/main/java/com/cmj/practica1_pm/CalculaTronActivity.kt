@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -67,9 +66,8 @@ class CalculaTronActivity : ComponentActivity() {
 }
 
 fun comprobarOperacion() {
-    if(respuestaOperacion.value.toInt() == 4){
-        aciertos.intValue++
-    }else fallos.intValue++
+    if(respuestaOperacion.value.toInt() == 4) aciertos.intValue++
+    else fallos.intValue++
 }
 
 @Composable
@@ -85,6 +83,7 @@ fun Contador(contador: MutableState<Int>){
 fun Estadisticas(){
     Text(
         "Aciertos: ${aciertos.intValue} Fallos: ${fallos.intValue}",
+        fontSize = 20.sp,
         modifier = Modifier.padding(vertical = 20.dp)
     )
 }
