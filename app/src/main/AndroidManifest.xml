@@ -13,11 +13,6 @@
         android:theme="@style/Theme.Practica1PM"
         tools:targetApi="31">
         <activity
-            android:name=".CalculaTronSettingsActivity"
-            android:exported="false"
-            android:label="@string/title_activity_calcula_tron_settings"
-            android:theme="@style/Theme.Practica1PM" />
-        <activity
             android:name=".MemoryTronActivity"
             android:exported="false"
             android:label="@string/title_activity_memory_tron"
