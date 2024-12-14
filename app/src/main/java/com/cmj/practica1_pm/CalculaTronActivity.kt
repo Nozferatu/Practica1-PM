@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,8 +41,6 @@ import com.cmj.practica1_pm.ui.theme.Practica1PMTheme
 import kotlinx.coroutines.delay
 
 private var respuestaOperacion = mutableStateOf("")
-private var aciertos = mutableIntStateOf(0)
-private var fallos = mutableIntStateOf(0)
 
 class CalculaTronActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,26 +63,12 @@ class CalculaTronActivity : ComponentActivity() {
     }
 }
 
-fun comprobarOperacion() {
-    if(respuestaOperacion.value.toInt() == 4){
-        aciertos.intValue++
-    }else fallos.intValue++
-}
-
 @Composable
 fun Contador(contador: MutableState<Int>){
     Text(modifier = Modifier
         .padding(vertical = 20.dp),
         text = contador.value.toString(),
         fontSize = 30.sp
-    )
-}
-
-@Composable
-fun Estadisticas(){
-    Text(
-        "Aciertos: ${aciertos.intValue} Fallos: ${fallos.intValue}",
-        modifier = Modifier.padding(vertical = 20.dp)
     )
 }
 
@@ -100,8 +83,7 @@ fun Operacion(){
         OutlinedTextField(modifier = Modifier
             .size(width = 125.dp, height = 50.dp),
             value = respuestaOperacion.value,
-            onValueChange = { respuestaOperacion.value = it },
-            readOnly = true
+            onValueChange = { respuestaOperacion.value = it }
         )
     }
 }
@@ -169,8 +151,8 @@ fun Teclado(){
 
         item{
             Column {
-                Tecla("CE", funcion = { respuestaOperacion.value = "" })
-                Tecla("=", altura = 150.dp, funcion = { comprobarOperacion() })
+                Tecla("CE")
+                Tecla("=", altura = 150.dp)
             }
         }
     }
@@ -187,7 +169,6 @@ fun CalculaTron(innerPadding: PaddingValues) {
         verticalArrangement = Arrangement.Center
     ) {
         Contador(contador)
-        Estadisticas()
         Operacion()
         Teclado()
     }
