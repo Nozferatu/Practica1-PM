@@ -40,12 +40,6 @@ import androidx.compose.ui.unit.sp
 import com.cmj.practica1_pm.ui.theme.Practica1PMTheme
 import kotlinx.coroutines.delay
 
-
-private val operandoA = mutableIntStateOf(0)
-private val operandoB = mutableIntStateOf(0)
-private val posiblesOperaciones = listOf("+", "-", "*")
-private val operacion = mutableStateOf("+")
-
 private var respuestaOperacion = mutableStateOf("")
 private var aciertos = mutableIntStateOf(0)
 private var fallos = mutableIntStateOf(0)
@@ -71,30 +65,9 @@ class CalculaTronActivity : ComponentActivity() {
     }
 }
 
-fun generarOperacion(){
-    operandoA.intValue = (1..20).random()
-    operandoB.intValue = (1..20).random()
-    operacion.value = posiblesOperaciones.random()
-}
-
 fun comprobarOperacion() {
-    when(operacion.value){
-        "+" -> {
-            if(respuestaOperacion.value.toInt() == operandoA.intValue + operandoB.intValue) aciertos.intValue++
-            else fallos.intValue++
-        }
-        "-" -> {
-            if(respuestaOperacion.value.toInt() == operandoA.intValue - operandoB.intValue) aciertos.intValue++
-            else fallos.intValue++
-        }
-        "*" -> {
-            if(respuestaOperacion.value.toInt() == operandoA.intValue * operandoB.intValue) aciertos.intValue++
-            else fallos.intValue++
-        }
-    }
-
-    respuestaOperacion.value = ""
-    generarOperacion()
+    if(respuestaOperacion.value.toInt() == 4) aciertos.intValue++
+    else fallos.intValue++
 }
 
 @Composable
@@ -121,11 +94,10 @@ fun Operacion(){
         .width(200.dp)
         .padding(vertical = 20.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ){
-        Text("${operandoA.intValue} ${operacion.value} ${operandoB.intValue} = ?")
+        horizontalArrangement = Arrangement.SpaceBetween){
+        Text("2 + 2 = ?")
         OutlinedTextField(modifier = Modifier
-            .size(width = 100.dp, height = 50.dp),
+            .size(width = 125.dp, height = 50.dp),
             value = respuestaOperacion.value,
             onValueChange = { respuestaOperacion.value = it },
             readOnly = true
@@ -220,8 +192,6 @@ fun CalculaTron(innerPadding: PaddingValues) {
     }
 
     LaunchedEffect(Unit) {
-        generarOperacion()
-
         while(contador.intValue > 0){
             delay(1000L)
             contador.intValue--
