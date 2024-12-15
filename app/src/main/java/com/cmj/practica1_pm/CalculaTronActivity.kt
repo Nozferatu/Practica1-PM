@@ -1,25 +1,30 @@
 package com.cmj.practica1_pm
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.staggeredgrid.LazyHorizontalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -34,12 +39,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.cmj.practica1_pm.ui.theme.Practica1PMTheme
 import kotlinx.coroutines.delay
 
@@ -107,6 +111,28 @@ fun comprobarOperacion() {
 }
 
 @Composable
+fun BarraSuperior(){
+    val contexto = LocalContext.current
+
+    Row(
+        modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+        horizontalArrangement = Arrangement.End
+    ){
+        IconButton(
+            onClick = {
+                val intent = Intent(contexto, CalculaTronSettingsActivity::class.java)
+                contexto.startActivity(intent)
+            }
+        ) {
+            Icon(
+                imageVector = Icons.Default.Settings,
+                "Configuración"
+            )
+        }
+    }
+}
+
+@Composable
 fun Contador(contador: MutableState<Int>){
     Text(modifier = Modifier
         .padding(vertical = 20.dp),
@@ -131,7 +157,7 @@ fun Operacion(){
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ){
-        Text("${operandoA.intValue} ${operacion.value} ${operandoB.intValue} = ?")
+        Text("${operandoA.intValue} ${operacion.value} ${operandoB.intValue} = ?", fontSize = 16.sp)
         OutlinedTextField(modifier = Modifier
             .size(width = 100.dp, height = 40.dp),
             value = respuestaOperacion.value,
@@ -143,80 +169,165 @@ fun Operacion(){
 
 @Composable
 fun Tecla(
+    modifier: Modifier,
     contenido: String,
-    altura: Dp = 40.dp,
-    anchura: Dp = 40.dp,
+    altura: Int = 45,
+    anchura: Int = 70,
     funcion: () -> (Unit) = {
         respuestaOperacion.value += contenido
     }
 ){
-    Box(modifier = Modifier
-        .size(width = anchura, height = altura)
-        .padding(2.dp)
-        .background(Color.Black)
-        .clickable { funcion() },
-        contentAlignment = Alignment.Center
-
+    Button(
+        onClick = { funcion() },
+        modifier = modifier
+        //.size(width = anchura.dp, height = altura.dp)
+            .requiredSize(height = altura.dp, width = anchura.dp)
+        .padding(2.dp),
+        shape = RoundedCornerShape(5.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Magenta,
+            contentColor = Color.White
+        )
     ) {
         Text(
             contenido,
             color = Color.White,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
+            //fontWeight = FontWeight.Bold,
+            //textAlign = TextAlign.Center,
         )
     }
 }
 
 @Composable
 fun Teclado(){
-    LazyHorizontalStaggeredGrid(
+    ConstraintLayout(
         modifier = Modifier
-            .wrapContentSize(),
-        rows = StaggeredGridCells.Fixed(4),
-        verticalArrangement = Arrangement.Center
+            .padding(4.dp)
+            .wrapContentSize()
     ) {
-        item{
-            Tecla("7")
-        }
-        item{
-            Tecla("4")
-        }
-        item{
-            Tecla("1")
-        }
-        item{
-            Tecla("0")
-        }
-        item{
-            Tecla("8")
-        }
-        item{
-            Tecla("5")
-        }
-        item{
-            Tecla("2")
-        }
-        item{
-            Tecla("-")
-        }
-        item{
-            Tecla("9")
-        }
-        item{
-            Tecla("6")
-        }
-        item{
-            Tecla("3")
-        }
-        item{
-            Tecla("C", funcion = { respuestaOperacion.value = respuestaOperacion.value.dropLast(1) })
-        }
-        item{
-            Tecla("CE", funcion = { respuestaOperacion.value = "" })
-        }
-        item(span = StaggeredGridItemSpan.FullLine){
-            Tecla("=", funcion = { comprobarOperacion() })
-        }
+        val (
+            siete, ocho, nueve, ce,
+            cuatro, cinco, seis,
+            uno, dos, tres,
+            cero, menos, c, igual
+        ) = createRefs()
+
+        Tecla(
+            Modifier.constrainAs(siete) {
+                top.linkTo(parent.top)
+                start.linkTo(parent.start)
+                end.linkTo(ocho.start)
+                bottom.linkTo(cuatro.top)
+            }, "7"
+        )
+        Tecla(
+            Modifier.constrainAs(ocho) {
+                top.linkTo(parent.top)
+                start.linkTo(siete.end)
+                end.linkTo(nueve.start)
+                bottom.linkTo(cinco.top)
+            },"8"
+        )
+        Tecla(
+            Modifier.constrainAs(nueve) {
+                top.linkTo(parent.top)
+                start.linkTo(ocho.end)
+                end.linkTo(ce.start)
+                bottom.linkTo(seis.top)
+            },"9"
+        )
+        Tecla(
+            Modifier.constrainAs(ce) {
+                top.linkTo(parent.top)
+                start.linkTo(nueve.end)
+                end.linkTo(parent.end)
+                bottom.linkTo(igual.top)
+            },"CE",
+            funcion = { respuestaOperacion.value = "" }
+        )
+        Tecla(
+            Modifier.constrainAs(cuatro) {
+                top.linkTo(siete.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(cinco.start)
+                bottom.linkTo(uno.top)
+            },"4"
+        )
+        Tecla(
+            Modifier.constrainAs(cinco) {
+                top.linkTo(ocho.bottom)
+                start.linkTo(cuatro.end)
+                end.linkTo(seis.start)
+                bottom.linkTo(dos.top)
+            },"5"
+        )
+        Tecla(
+            Modifier.constrainAs(seis) {
+                top.linkTo(nueve.bottom)
+                start.linkTo(cinco.end)
+                //end.linkTo(igual.start)
+                bottom.linkTo(tres.top)
+            },"6"
+        )
+        Tecla(
+            Modifier.constrainAs(uno) {
+                top.linkTo(cuatro.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(dos.start)
+                bottom.linkTo(cero.top)
+            },"1"
+        )
+        Tecla(
+            Modifier.constrainAs(dos) {
+                top.linkTo(cinco.bottom)
+                start.linkTo(uno.end)
+                end.linkTo(tres.start)
+                bottom.linkTo(menos.top)
+            },"2"
+        )
+        Tecla(
+            Modifier.constrainAs(tres) {
+                top.linkTo(seis.bottom)
+                start.linkTo(dos.end)
+                //end.linkTo(igual.start)
+                bottom.linkTo(c.top)
+            },"3"
+        )
+        Tecla(
+            Modifier.constrainAs(cero) {
+                top.linkTo(uno.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(menos.start)
+                bottom.linkTo(parent.bottom)
+            },"0"
+        )
+        Tecla(
+            Modifier.constrainAs(menos) {
+                top.linkTo(dos.bottom)
+                start.linkTo(cero.end)
+                end.linkTo(c.start)
+                bottom.linkTo(parent.bottom)
+            },"-"
+        )
+        Tecla(
+            Modifier.constrainAs(c) {
+                top.linkTo(tres.bottom)
+                start.linkTo(menos.end)
+                //end.linkTo(igual.start)
+                bottom.linkTo(parent.bottom)
+            },"C",
+            funcion = { respuestaOperacion.value = respuestaOperacion.value.dropLast(1) }
+        )
+        Tecla(
+            Modifier.constrainAs(igual) {
+                top.linkTo(ce.bottom)
+                //start.linkTo(ce.start)
+                end.linkTo(parent.end)
+                bottom.linkTo(parent.bottom)
+            },"=",
+            altura = 135,
+            funcion = { comprobarOperacion() }
+        )
     }
 }
 
@@ -228,8 +339,12 @@ fun CalculaTron(modifier: Modifier = Modifier) {
         .fillMaxWidth()
         .padding(bottom = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
+        BarraSuperior()
+
+        Spacer(Modifier.weight(1f))
+
         Contador(contador)
         Estadisticas()
         Operacion()
@@ -246,7 +361,7 @@ fun CalculaTron(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(showBackground = true, widthDp = 900, heightDp = 400)
+@Preview(showBackground = true, widthDp = 400, heightDp = 900)
 @Composable
 fun CalculaTronPreview(){
     CalculaTron()
