@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
 fun MenuInicio(modifier: Modifier = Modifier) {
     val contexto = LocalContext.current
 
-    Column(modifier = Modifier
+    Column(modifier = modifier
         .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
