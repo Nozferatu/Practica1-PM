@@ -49,12 +49,13 @@ import kotlinx.coroutines.delay
 
 lateinit var sharedPreferences: SharedPreferences
 
+private val reinicio = mutableIntStateOf(0)
 private val operandoA = mutableIntStateOf(0)
 private val operandoB = mutableIntStateOf(0)
 lateinit var contador: MutableIntState
 lateinit var valorMinimo: MutableIntState
 lateinit var valorMaximo: MutableIntState
-private val posiblesOperaciones = listOf("+", "-", "*")
+val posiblesOperaciones = listOf("+", "-", "*")
 private val operacion = mutableStateOf("+")
 
 private var respuestaOperacion = mutableStateOf("")
@@ -83,6 +84,10 @@ class CalculaTronActivity : ComponentActivity() {
             }
         }
     }
+}
+
+fun reiniciarContador(){
+    reinicio.intValue = (0..20).random()
 }
 
 fun generarOperacion(){
@@ -116,9 +121,16 @@ fun BarraSuperior(){
     val contexto = LocalContext.current
 
     Row(
-        modifier = Modifier.fillMaxWidth().wrapContentHeight(),
-        horizontalArrangement = Arrangement.End
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .padding(horizontal = 20.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
     ){
+        Button(
+            onClick = { reiniciarContador() }
+        ) { Text("Reiniciar") }
+
         IconButton(
             onClick = {
                 val intent = Intent(contexto, CalculaTronSettingsActivity::class.java)
@@ -354,20 +366,28 @@ fun CalculaTron(modifier: Modifier = Modifier) {
     }
 
     LaunchedEffect(
-        key1 = contador.intValue,
+        key1 = reinicio.intValue,
         key2 = valorMaximo.intValue,
         key3 = valorMinimo.intValue,
     ) {
         generarOperacion()
+
+        contadorActual.intValue = contador.intValue
 
         while(contadorActual.intValue > 0){
             delay(1000L)
             contadorActual.intValue--
         }
 
-        val intent = Intent(contexto, CalculaTronResultadoActivity::class.java)
-        intent.putExtra("aciertos", aciertos.intValue)
-        intent.putExtra("fallos", fallos.intValue)
+        //if(contadorActual.intValue == 0){
+            delay(1000L)
+
+            val intent = Intent(contexto, CalculaTronResultadoActivity::class.java)
+            intent.putExtra("aciertos", aciertos.intValue)
+            intent.putExtra("fallos", fallos.intValue)
+
+            contexto.startActivity(intent)
+        //}
     }
 }
 
