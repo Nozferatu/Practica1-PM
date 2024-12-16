@@ -48,12 +48,12 @@ import com.cmj.practica1_pm.ui.theme.Practica1PMTheme
 import kotlinx.coroutines.delay
 
 
-private lateinit var sharedPreferences: SharedPreferences
+lateinit var sharedPreferences: SharedPreferences
 
 private val operandoA = mutableIntStateOf(0)
 private val operandoB = mutableIntStateOf(0)
-private lateinit var valorMinimo: MutableIntState
-private lateinit var valorMaximo: MutableIntState
+lateinit var valorMinimo: MutableIntState
+lateinit var valorMaximo: MutableIntState
 private val posiblesOperaciones = listOf("+", "-", "*")
 private val operacion = mutableStateOf("+")
 
@@ -159,7 +159,7 @@ fun Operacion(){
     ){
         Text("${operandoA.intValue} ${operacion.value} ${operandoB.intValue} = ?", fontSize = 16.sp)
         OutlinedTextField(modifier = Modifier
-            .size(width = 100.dp, height = 40.dp),
+            .size(width = 100.dp, height = 50.dp),
             value = respuestaOperacion.value,
             onValueChange = { respuestaOperacion.value = it },
             readOnly = true
@@ -333,7 +333,7 @@ fun Teclado(){
 
 @Composable
 fun CalculaTron(modifier: Modifier = Modifier) {
-    val contador = remember { mutableIntStateOf(20) }
+    val contador = remember { mutableIntStateOf(30) }
 
     Column(modifier = modifier
         .fillMaxWidth()
@@ -351,7 +351,10 @@ fun CalculaTron(modifier: Modifier = Modifier) {
         Teclado()
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(
+        key1 = valorMinimo.intValue,
+        key2 = valorMaximo.intValue
+    ) {
         generarOperacion()
 
         while(contador.intValue > 0){
