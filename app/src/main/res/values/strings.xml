@@ -3,4 +3,5 @@
     <string name="title_activity_memory_tron">MemoryTronActivity</string>
     <string name="title_activity_calcula_tron">CalculaTronActivity</string>
     <string name="title_activity_calcula_tron_settings">CalculaTronSettingsActivity</string>
+    <string name="title_activity_calcula_tron_resultado">CalculaTronResultadoActivity</string>
 </resources>

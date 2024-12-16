@@ -334,6 +334,7 @@ fun Teclado(){
 
 @Composable
 fun CalculaTron(modifier: Modifier = Modifier) {
+    val contexto = LocalContext.current
     val contadorActual = remember { mutableIntStateOf(contador.intValue) }
 
     Column(modifier = modifier
@@ -363,6 +364,10 @@ fun CalculaTron(modifier: Modifier = Modifier) {
             delay(1000L)
             contadorActual.intValue--
         }
+
+        val intent = Intent(contexto, CalculaTronResultadoActivity::class.java)
+        intent.putExtra("aciertos", aciertos.intValue)
+        intent.putExtra("fallos", fallos.intValue)
     }
 }
 
