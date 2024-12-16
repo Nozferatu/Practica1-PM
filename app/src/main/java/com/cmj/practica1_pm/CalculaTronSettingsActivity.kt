@@ -2,12 +2,12 @@ package com.cmj.practica1_pm
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -19,7 +19,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import com.cmj.practica1_pm.ui.theme.Practica1PMTheme
 
@@ -47,32 +49,50 @@ class CalculaTronSettingsActivity : ComponentActivity() {
 
 @Composable
 fun Settings(modifier: Modifier = Modifier) {
-    var valorMinimoTemp by rememberSaveable { mutableStateOf("") }
-    var valorMaximoTemp by rememberSaveable { mutableStateOf("") }
+    var contadorTemp by rememberSaveable { mutableStateOf("" + contador.intValue) }
+    var valorMinimoTemp by rememberSaveable { mutableStateOf("" + valorMinimo.intValue) }
+    var valorMaximoTemp by rememberSaveable { mutableStateOf("" + valorMaximo.intValue) }
 
-    Column(modifier = modifier) {
-        OutlinedTextField(
+    val modifierInput = Modifier
+        .padding(vertical = 10.dp)
+
+    Column(modifier = modifier
+        .padding(horizontal = 20.dp)
+    ) {
+        OutlinedTextField(modifier = modifierInput,
+            value =  contadorTemp,
+            onValueChange = { contadorTemp = it },
+            label = { Text("Valor mínimo") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+        )
+
+        OutlinedTextField(modifier = modifierInput,
             value =  valorMinimoTemp,
             onValueChange = { valorMinimoTemp = it },
             label = { Text("Valor mínimo") },
-            singleLine = true
+            singleLine = true,
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
         )
 
-        OutlinedTextField(
+        OutlinedTextField(modifier = modifierInput,
             value =  valorMaximoTemp,
             onValueChange = { valorMaximoTemp = it },
             label = { Text("Valor máximo") },
-            singleLine = true
+            singleLine = true,
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
         )
 
         Button(
             onClick = {
-                valorMinimo.intValue = valorMinimoTemp.toInt()
-                valorMaximo.intValue = valorMaximoTemp.toInt()
+                contador.intValue = contadorTemp.toIntOrNull() ?: 30
+                valorMinimo.intValue = valorMinimoTemp.toIntOrNull() ?: 1
+                valorMaximo.intValue = valorMaximoTemp.toIntOrNull() ?: 20
 
                 sharedPreferences.edit {
-                    putInt("valorMinimo", valorMinimoTemp.toInt())
-                    putInt("valorMaximo", valorMaximoTemp.toInt())
+                    putInt("contador", contador.intValue)
+                    putInt("valorMinimo", valorMinimo.intValue)
+                    putInt("valorMaximo", valorMaximo.intValue)
 
                     commit()
                 }
@@ -80,10 +100,6 @@ fun Settings(modifier: Modifier = Modifier) {
         ) {
             Text("Guardar")
         }
-    }
-
-    BackHandler {
-        //contador.intValue = 30
     }
 }
 

@@ -32,7 +32,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableIntState
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +51,7 @@ lateinit var sharedPreferences: SharedPreferences
 
 private val operandoA = mutableIntStateOf(0)
 private val operandoB = mutableIntStateOf(0)
+lateinit var contador: MutableIntState
 lateinit var valorMinimo: MutableIntState
 lateinit var valorMaximo: MutableIntState
 private val posiblesOperaciones = listOf("+", "-", "*")
@@ -67,6 +67,7 @@ class CalculaTronActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         sharedPreferences = getSharedPreferences("CalculaTron", MODE_PRIVATE)
+        contador = mutableIntStateOf(sharedPreferences.getInt("contador", 30))
         valorMinimo = mutableIntStateOf(sharedPreferences.getInt("valorMinimo", 1))
         valorMaximo = mutableIntStateOf(sharedPreferences.getInt("valorMaximo", 20))
 
@@ -133,10 +134,10 @@ fun BarraSuperior(){
 }
 
 @Composable
-fun Contador(contador: MutableState<Int>){
+fun Contador(contador: MutableIntState){
     Text(modifier = Modifier
         .padding(vertical = 20.dp),
-        text = contador.value.toString(),
+        text = contador.intValue.toString(),
         fontSize = 30.sp
     )
 }
@@ -333,7 +334,7 @@ fun Teclado(){
 
 @Composable
 fun CalculaTron(modifier: Modifier = Modifier) {
-    val contador = remember { mutableIntStateOf(30) }
+    val contadorActual = remember { mutableIntStateOf(contador.intValue) }
 
     Column(modifier = modifier
         .fillMaxWidth()
@@ -345,21 +346,22 @@ fun CalculaTron(modifier: Modifier = Modifier) {
 
         Spacer(Modifier.weight(1f))
 
-        Contador(contador)
+        Contador(contadorActual)
         Estadisticas()
         Operacion()
         Teclado()
     }
 
     LaunchedEffect(
-        key1 = valorMinimo.intValue,
-        key2 = valorMaximo.intValue
+        key1 = contador.intValue,
+        key2 = valorMaximo.intValue,
+        key3 = valorMinimo.intValue,
     ) {
         generarOperacion()
 
-        while(contador.intValue > 0){
+        while(contadorActual.intValue > 0){
             delay(1000L)
-            contador.intValue--
+            contadorActual.intValue--
         }
     }
 }
