@@ -33,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -56,7 +57,7 @@ lateinit var contador: MutableIntState
 var contadorPausado = mutableStateOf(false)
 lateinit var valorMinimo: MutableIntState
 lateinit var valorMaximo: MutableIntState
-lateinit var posiblesOperaciones: List<String>
+var posiblesOperaciones = mutableStateListOf<String>()
 private val operacion = mutableStateOf("+")
 
 private var respuestaOperacion = mutableStateOf("")
@@ -72,7 +73,11 @@ class CalculaTronActivity : ComponentActivity() {
         contador = mutableIntStateOf(sharedPreferences.getInt("contador", 30))
         valorMinimo = mutableIntStateOf(sharedPreferences.getInt("valorMinimo", 1))
         valorMaximo = mutableIntStateOf(sharedPreferences.getInt("valorMaximo", 20))
-        posiblesOperaciones = sharedPreferences.getString("operaciones", "+,-,*")?.split(",") ?: listOf("+", "-", "*")
+
+        val posiblesOperacionesTemp = sharedPreferences.getString("operaciones", "+,-,*")?.split(",") ?: listOf("+", "-", "*")
+        for(op in posiblesOperacionesTemp){
+            posiblesOperaciones.add(op)
+        }
 
         setContent {
             Practica1PMTheme {
@@ -370,9 +375,7 @@ fun CalculaTron(modifier: Modifier = Modifier) {
     }
 
     LaunchedEffect(
-        key1 = reinicio.intValue,
-        key2 = valorMaximo.intValue,
-        key3 = valorMinimo.intValue,
+        key1 = reinicio.intValue
     ) {
         generarOperacion()
 

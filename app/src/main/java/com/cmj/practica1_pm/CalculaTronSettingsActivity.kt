@@ -61,8 +61,8 @@ class CalculaTronSettingsActivity : ComponentActivity() {
 }
 
 @Composable
-fun OpcionCheckBox(operacion: String){
-    val checkedState = remember { mutableStateOf(true) }
+fun OpcionCheckBox(operacion: String, permitida: Boolean){
+    val checkedState = remember { mutableStateOf(permitida) }
 
     Row(
         Modifier
@@ -138,7 +138,7 @@ fun Settings(modifier: Modifier = Modifier) {
 
                 operacionesPermitidas[operacion] = permitida
 
-                OpcionCheckBox(operacion)
+                OpcionCheckBox(operacion, permitida)
             }
         }
 
@@ -161,8 +161,10 @@ fun Settings(modifier: Modifier = Modifier) {
 
                     var operacionesPermitidasStr = ""
 
+                    posiblesOperaciones.clear()
                     for(i in listaOperaciones.indices){
                         operacionesPermitidasStr += listaOperaciones[i]
+                        posiblesOperaciones.add(listaOperaciones[i])
 
                         if(i < listaOperaciones.size - 1) operacionesPermitidasStr += ","
                     }
@@ -170,8 +172,6 @@ fun Settings(modifier: Modifier = Modifier) {
                     putString("operaciones", operacionesPermitidasStr)
 
                     commit()
-
-                    reiniciarContador()
                 }
             }
         ) {
