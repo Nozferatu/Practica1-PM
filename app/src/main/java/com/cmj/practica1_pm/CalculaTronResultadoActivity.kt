@@ -51,31 +51,35 @@ class CalculaTronResultadoActivity : ComponentActivity() {
 
 @Composable
 fun Resultado(modifier: Modifier = Modifier) {
-    //val porcentajeAciertosAnteriores = aciertosAnteriores + fallosAnteriores
+    val respondidasAnteriores = aciertosAnteriores + fallosAnteriores
+    val porcentajeAciertosAnteriores: Float = (aciertosAnteriores.toFloat() / respondidasAnteriores.toFloat()) * 100f
+    val respondidasTotales = aciertosTotales.intValue + fallosTotales.intValue
+    val porcentajeAciertosTotales: Float = (aciertosTotales.intValue.toFloat() / respondidasTotales.toFloat()) * 100f
 
     Column(modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Partida anterior:", fontSize = 24.sp)
+        Text("Partida anterior:", fontSize = 24.sp, modifier = Modifier.padding(vertical = 30.dp))
         Row(modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 100.dp, vertical = 20.dp),
+            .padding(horizontal = 100.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text("Aciertos: $aciertosAnteriores")
             Text("Fallos: $fallosAnteriores")
         }
-        //Text("Porcentaje de aciertos: ${aciertosAnteriores}")
+        Text("Porcentaje de aciertos: ${porcentajeAciertosAnteriores}%")
 
-        Text("Total:", fontSize = 24.sp)
+        Text("Total:", fontSize = 24.sp, modifier = Modifier.padding(vertical = 30.dp))
         Row(modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 100.dp, vertical = 20.dp),
+            .padding(horizontal = 100.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text("Aciertos: ${aciertosTotales.intValue}")
-            Text("Aciertos: ${fallosTotales.intValue}")
+            Text("Fallos: ${fallosTotales.intValue}")
         }
+        Text("Porcentaje de aciertos: ${porcentajeAciertosTotales}%")
     }
 }
 

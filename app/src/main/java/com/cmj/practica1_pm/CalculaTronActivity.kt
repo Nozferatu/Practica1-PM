@@ -95,6 +95,10 @@ class CalculaTronActivity : ComponentActivity() {
 
 fun reiniciarContador(){
     reinicio.intValue = (0..50).random()
+
+    aciertos.intValue = 0
+    fallos.intValue = 0
+
     contadorPausado.value = false
 }
 
