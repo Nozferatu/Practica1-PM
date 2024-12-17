@@ -90,6 +90,7 @@ class CalculaTronActivity : ComponentActivity() {
 
 fun reiniciarContador(){
     reinicio.intValue = (0..50).random()
+    contadorPausado.value = false
 }
 
 fun generarOperacion(){

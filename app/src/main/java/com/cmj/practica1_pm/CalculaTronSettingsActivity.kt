@@ -2,9 +2,7 @@ package com.cmj.practica1_pm
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
@@ -32,7 +30,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -135,7 +132,11 @@ fun Settings(modifier: Modifier = Modifier) {
 
         LazyColumn {
             items(listOf("+", "-", "*")){ operacion ->
-                operacionesPermitidas[operacion] = true
+                val permitida = sharedPreferences.getString("operaciones", "+,-,*")
+                    ?.split(",")
+                    ?.contains(operacion) ?: true
+
+                operacionesPermitidas[operacion] = permitida
 
                 OpcionCheckBox(operacion)
             }
@@ -179,7 +180,6 @@ fun Settings(modifier: Modifier = Modifier) {
     }
 
     BackHandler(false) {
-        contadorPausado.value = false
         reiniciarContador()
     }
 }
