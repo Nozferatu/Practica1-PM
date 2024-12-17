@@ -21,9 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import com.cmj.practica1_pm.ui.theme.Practica1PMTheme
 
-private var opcionesMarcadas = mutableStateListOf<Boolean>()
+private val operacionesPermitidas = mutableStateMapOf<String, Boolean>()
 
 class CalculaTronSettingsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,25 +60,25 @@ class CalculaTronSettingsActivity : ComponentActivity() {
 }
 
 @Composable
-fun OpcionCheckBox(operacion: String, operacionPermitida: MutableState<Boolean>){
-    val (checkedState, onStateChange) = remember { mutableStateOf(true) }
+fun OpcionCheckBox(operacion: String){
+    val checkedState = remember { mutableStateOf(true) }
 
     Row(
         Modifier
             .fillMaxWidth()
             .padding(vertical = 16.dp)
             .toggleable(
-                value = checkedState,
+                value = checkedState.value,
                 onValueChange = {
-                    onStateChange(!checkedState)
-                    operacionPermitida.value = checkedState
+                    checkedState.value = !checkedState.value
+                    operacionesPermitidas.replace(operacion, checkedState.value)
                                 },
                 role = Role.Checkbox
             )
             .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically
     ) {
         Checkbox(
-            checked = checkedState,
+            checked = checkedState.value,
             onCheckedChange = null
         )
         Text(
@@ -96,8 +94,6 @@ fun Settings(modifier: Modifier = Modifier) {
     var contadorTemp by rememberSaveable { mutableStateOf("" + contador.intValue) }
     var valorMinimoTemp by rememberSaveable { mutableStateOf("" + valorMinimo.intValue) }
     var valorMaximoTemp by rememberSaveable { mutableStateOf("" + valorMaximo.intValue) }
-
-    val operacionesPermitidas = remember { mutableStateMapOf<String, MutableState<Boolean>>() }
 
     val modifierInput = Modifier
         .padding(vertical = 10.dp)
@@ -135,10 +131,9 @@ fun Settings(modifier: Modifier = Modifier) {
 
         LazyColumn {
             items(posiblesOperaciones){ operacion ->
-                val operacionPermitida = remember { mutableStateOf(true) }
-                operacionesPermitidas[operacion] = operacionPermitida
+                operacionesPermitidas[operacion] = true
 
-                OpcionCheckBox(operacion, operacionPermitida)
+                OpcionCheckBox(operacion)
             }
         }
 
@@ -148,6 +143,8 @@ fun Settings(modifier: Modifier = Modifier) {
                 operacionesPermitidas.forEach { (operacion, valor) ->
                     println("$operacion ${valor.value}")
                 }*/
+
+                println(operacionesPermitidas.toList().toString())
 
                 contador.intValue = contadorTemp.toIntOrNull() ?: 30
                 valorMinimo.intValue = valorMinimoTemp.toIntOrNull() ?: 1
