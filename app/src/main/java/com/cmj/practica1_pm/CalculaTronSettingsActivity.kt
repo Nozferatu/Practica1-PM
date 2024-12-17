@@ -2,6 +2,9 @@ package com.cmj.practica1_pm
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedDispatcher
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
@@ -29,6 +32,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -72,7 +76,7 @@ fun OpcionCheckBox(operacion: String){
                 onValueChange = {
                     checkedState.value = !checkedState.value
                     operacionesPermitidas.replace(operacion, checkedState.value)
-                                },
+                },
                 role = Role.Checkbox
             )
             .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically
@@ -130,7 +134,7 @@ fun Settings(modifier: Modifier = Modifier) {
         )
 
         LazyColumn {
-            items(posiblesOperaciones){ operacion ->
+            items(listOf("+", "-", "*")){ operacion ->
                 operacionesPermitidas[operacion] = true
 
                 OpcionCheckBox(operacion)
@@ -139,13 +143,7 @@ fun Settings(modifier: Modifier = Modifier) {
 
 
         Button(
-            onClick = {/*
-                operacionesPermitidas.forEach { (operacion, valor) ->
-                    println("$operacion ${valor.value}")
-                }*/
-
-                println(operacionesPermitidas.toList().toString())
-
+            onClick = {
                 contador.intValue = contadorTemp.toIntOrNull() ?: 30
                 valorMinimo.intValue = valorMinimoTemp.toIntOrNull() ?: 1
                 valorMaximo.intValue = valorMaximoTemp.toIntOrNull() ?: 20
@@ -155,12 +153,34 @@ fun Settings(modifier: Modifier = Modifier) {
                     putInt("valorMinimo", valorMinimo.intValue)
                     putInt("valorMaximo", valorMaximo.intValue)
 
+                    val listaOperaciones = mutableListOf<String>()
+                    operacionesPermitidas.forEach { (operacion, permitida) ->
+                        if(permitida) listaOperaciones.add(operacion)
+                    }
+
+                    var operacionesPermitidasStr = ""
+
+                    for(i in listaOperaciones.indices){
+                        operacionesPermitidasStr += listaOperaciones[i]
+
+                        if(i < listaOperaciones.size - 1) operacionesPermitidasStr += ","
+                    }
+
+                    putString("operaciones", operacionesPermitidasStr)
+
                     commit()
+
+                    reiniciarContador()
                 }
             }
         ) {
             Text("Guardar")
         }
+    }
+
+    BackHandler(false) {
+        contadorPausado.value = false
+        reiniciarContador()
     }
 }
 

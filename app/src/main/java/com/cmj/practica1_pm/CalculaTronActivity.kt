@@ -53,9 +53,10 @@ private val reinicio = mutableIntStateOf(0)
 private val operandoA = mutableIntStateOf(0)
 private val operandoB = mutableIntStateOf(0)
 lateinit var contador: MutableIntState
+var contadorPausado = mutableStateOf(false)
 lateinit var valorMinimo: MutableIntState
 lateinit var valorMaximo: MutableIntState
-val posiblesOperaciones = listOf("+", "-", "*")
+lateinit var posiblesOperaciones: List<String>
 private val operacion = mutableStateOf("+")
 
 private var respuestaOperacion = mutableStateOf("")
@@ -71,6 +72,7 @@ class CalculaTronActivity : ComponentActivity() {
         contador = mutableIntStateOf(sharedPreferences.getInt("contador", 30))
         valorMinimo = mutableIntStateOf(sharedPreferences.getInt("valorMinimo", 1))
         valorMaximo = mutableIntStateOf(sharedPreferences.getInt("valorMaximo", 20))
+        posiblesOperaciones = sharedPreferences.getString("operaciones", "+,-,*")?.split(",") ?: listOf("+", "-", "*")
 
         setContent {
             Practica1PMTheme {
@@ -87,7 +89,7 @@ class CalculaTronActivity : ComponentActivity() {
 }
 
 fun reiniciarContador(){
-    reinicio.intValue = (0..20).random()
+    reinicio.intValue = (0..50).random()
 }
 
 fun generarOperacion(){
@@ -134,6 +136,7 @@ fun BarraSuperior(){
         IconButton(
             onClick = {
                 val intent = Intent(contexto, CalculaTronSettingsActivity::class.java)
+                contadorPausado.value = true
                 contexto.startActivity(intent)
             }
         ) {
@@ -374,12 +377,12 @@ fun CalculaTron(modifier: Modifier = Modifier) {
 
         contadorActual.intValue = contador.intValue
 
-        while(contadorActual.intValue > 0){
+        while(contadorActual.intValue > 0 && !contadorPausado.value){
             delay(1000L)
             contadorActual.intValue--
         }
 
-        //if(contadorActual.intValue == 0){
+        if(contadorActual.intValue == 0){
             delay(1000L)
 
             val intent = Intent(contexto, CalculaTronResultadoActivity::class.java)
@@ -387,7 +390,7 @@ fun CalculaTron(modifier: Modifier = Modifier) {
             intent.putExtra("fallos", fallos.intValue)
 
             contexto.startActivity(intent)
-        //}
+        }
     }
 }
 
