@@ -350,7 +350,14 @@ fun Teclado(){
                 start.linkTo(cero.end)
                 end.linkTo(c.start)
                 bottom.linkTo(parent.bottom)
-            },"-"
+            },"-",
+            funcion = {
+                if(respuestaOperacion.value.contains("-")){
+                    respuestaOperacion.value = respuestaOperacion.value.replace("-", "")
+                }else{
+                    respuestaOperacion.value = "-" + respuestaOperacion.value
+                }
+            }
         )
         Tecla(
             Modifier.constrainAs(c) {
