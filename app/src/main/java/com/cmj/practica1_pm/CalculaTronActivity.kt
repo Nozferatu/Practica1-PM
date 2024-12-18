@@ -1,8 +1,10 @@
 package com.cmj.practica1_pm
 
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -93,6 +95,14 @@ class CalculaTronActivity : ComponentActivity() {
     }
 }
 
+fun hacerTostada(contexto: Context, mensaje: String){
+    Toast.makeText(
+        contexto,
+        mensaje,
+        Toast.LENGTH_SHORT
+    ).show()
+}
+
 fun reiniciarContador(){
     reinicio.intValue = (0..50).random()
 
@@ -108,20 +118,25 @@ fun generarOperacion(){
     operacion.value = posiblesOperaciones.random()
 }
 
-fun comprobarOperacion() {
-    when(operacion.value){
-        "+" -> {
-            if(respuestaOperacion.value.toInt() == operandoA.intValue + operandoB.intValue) aciertos.intValue++
-            else fallos.intValue++
+fun comprobarOperacion(contexto: Context) {
+    try {
+        when(operacion.value){
+            "+" -> {
+                if(respuestaOperacion.value.toInt() == operandoA.intValue + operandoB.intValue) aciertos.intValue++
+                else fallos.intValue++
+            }
+            "-" -> {
+                if(respuestaOperacion.value.toInt() == operandoA.intValue - operandoB.intValue) aciertos.intValue++
+                else fallos.intValue++
+            }
+            "*" -> {
+                if(respuestaOperacion.value.toInt() == operandoA.intValue * operandoB.intValue) aciertos.intValue++
+                else fallos.intValue++
+            }
         }
-        "-" -> {
-            if(respuestaOperacion.value.toInt() == operandoA.intValue - operandoB.intValue) aciertos.intValue++
-            else fallos.intValue++
-        }
-        "*" -> {
-            if(respuestaOperacion.value.toInt() == operandoA.intValue * operandoB.intValue) aciertos.intValue++
-            else fallos.intValue++
-        }
+    }catch (ex: Exception){
+        hacerTostada(contexto, "Se ha intentado introducir un número demasiado grande")
+        ex.printStackTrace()
     }
 
     respuestaOperacion.value = ""
@@ -231,6 +246,8 @@ fun Teclado(){
             .padding(4.dp)
             .wrapContentSize()
     ) {
+        val contexto = LocalContext.current
+
         val (
             siete, ocho, nueve, ce,
             cuatro, cinco, seis,
@@ -352,7 +369,7 @@ fun Teclado(){
                 bottom.linkTo(parent.bottom)
             },"=",
             altura = 135,
-            funcion = { comprobarOperacion() }
+            funcion = { comprobarOperacion(contexto) }
         )
     }
 }
