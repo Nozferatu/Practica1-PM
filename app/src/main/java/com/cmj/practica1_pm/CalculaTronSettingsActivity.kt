@@ -30,6 +30,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -92,6 +93,7 @@ fun OpcionCheckBox(operacion: String, permitida: Boolean){
 
 @Composable
 fun Settings(modifier: Modifier = Modifier) {
+    val contexto = LocalContext.current
     var contadorTemp by rememberSaveable { mutableStateOf("" + contador.intValue) }
     var valorMinimoTemp by rememberSaveable { mutableStateOf("" + valorMinimo.intValue) }
     var valorMaximoTemp by rememberSaveable { mutableStateOf("" + valorMaximo.intValue) }
@@ -142,36 +144,44 @@ fun Settings(modifier: Modifier = Modifier) {
             }
         }
 
-
         Button(
             onClick = {
                 contador.intValue = contadorTemp.toIntOrNull() ?: 30
                 valorMinimo.intValue = valorMinimoTemp.toIntOrNull() ?: 1
                 valorMaximo.intValue = valorMaximoTemp.toIntOrNull() ?: 20
 
-                sharedPreferences.edit {
-                    putInt("contador", contador.intValue)
-                    putInt("valorMinimo", valorMinimo.intValue)
-                    putInt("valorMaximo", valorMaximo.intValue)
+                if(valorMinimo.intValue > 0 && valorMaximo.intValue > 0){
+                    sharedPreferences.edit {
+                        putInt("contador", contador.intValue)
+                        putInt("valorMinimo", valorMinimo.intValue)
+                        putInt("valorMaximo", valorMaximo.intValue)
 
-                    val listaOperaciones = mutableListOf<String>()
-                    operacionesPermitidas.forEach { (operacion, permitida) ->
-                        if(permitida) listaOperaciones.add(operacion)
+                        val listaOperaciones = mutableListOf<String>()
+                        operacionesPermitidas.forEach { (operacion, permitida) ->
+                            if(permitida) listaOperaciones.add(operacion)
+                        }
+
+                        var operacionesPermitidasStr = ""
+
+                        posiblesOperaciones.clear()
+                        for(i in listaOperaciones.indices){
+                            operacionesPermitidasStr += listaOperaciones[i]
+                            posiblesOperaciones.add(listaOperaciones[i])
+
+                            if(i < listaOperaciones.size - 1) operacionesPermitidasStr += ","
+                        }
+
+                        putString("operaciones", operacionesPermitidasStr)
+
+                        commit()
+
+                        hacerTostada(contexto, "Cambios guardados")
                     }
+                }else{
+                    hacerTostada(contexto, "Los valores no pueden ser 0 o menor")
 
-                    var operacionesPermitidasStr = ""
-
-                    posiblesOperaciones.clear()
-                    for(i in listaOperaciones.indices){
-                        operacionesPermitidasStr += listaOperaciones[i]
-                        posiblesOperaciones.add(listaOperaciones[i])
-
-                        if(i < listaOperaciones.size - 1) operacionesPermitidasStr += ","
-                    }
-
-                    putString("operaciones", operacionesPermitidasStr)
-
-                    commit()
+                    valorMinimo.intValue = 1
+                    valorMaximo.intValue = 20
                 }
             }
         ) {
